@@ -1,3 +1,5 @@
+# gitignore specifies intentionally untracked files to ignore
+
 *.swp
 *.pyc
 *.py~
