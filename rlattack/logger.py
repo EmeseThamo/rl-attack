@@ -1,11 +1,26 @@
+# The OS modul provides operating-system-specific parameters and funtions.
 import os
+# System-specific parameters and functions.
+# The SYS module provides access to some variables used or maintained by the interpreter and to functions that interact
+# strongly with the interpreter. It is always available.
 import sys
+# The SHUTIL module offers a number of high-level operations on files and collections of files. In particular, functions
+# are provided which support file copying and removal.
 import shutil
+# The OS.PATH module implements some useful functions on pathnames. 
 import os.path as osp
+# JSON can be used to work with JSON data.
+# JSON is a syntax for storing and exchanging data, it is text, written with JavaScript object notation.
 import json
+# The TIME module provides various time-related functions.
 import time
+# The DATETIME module supplies classes for manipulating dates and times in both simple and complex ways.
+# While date and time arithmetic is supported, the focus of the implementation is on efficient attribute extraction for output
+# formatting and manipulation.
 import datetime
+# The TEMPFILE module creates temporary files and directories.
 import tempfile
+
 
 LOG_OUTPUT_FORMATS = ['stdout', 'log', 'json']
 
@@ -16,20 +31,40 @@ ERROR = 40
 
 DISABLED = 50
 
+# Classes provide a means of bundling data and functionality together. Creating a new class creates a new type of object,
+# allowing new instances of that type to be made. Each class instance can have attributes attached to it for maintaining
+# its state. Class instances can also have methods (defined by its class) for modifying its state.
 class OutputFormat(object):
+    # Creating functions inside this class
+    # When defining an instance method, the first parameter of the method should always be self. But when calling that
+    # method, we do not pass anything for self as arguments.
     def writekvs(self, kvs):
         """
         Write key-value pairs
         """
+        # The raise statement allows the programmer to force a specified exception to occur.
+        # Even if a statement or expression is syntactically correct, it may cause an error when an attempt is made to
+        # execute it. Errors detected during execution are called exceptions and are not unconditionally fatal.
+        # NotImplementedError is a built-in exception.
+        # In user defined base classes, abstract methods should raise this exception when they require derived classes to
+        # override the method, or while the class is being developed to indicate that the real implementation still needs
+        # to be added.
+        #
+        # A.k.a. not implemented yet.
         raise NotImplementedError
 
     def writeseq(self, args):
         """
         Write a sequence of other data (e.g. a logging message)
         """
+        # Pass is a null operation -- when it is executed, nothing happens. It is useful as a placeholder when a statement
+        # is required syntactically, but no code needs to be executed.
         pass
 
     def close(self):
+        # All functions return a value when called.
+        # If a return statement is followed by an expression list, that expression list is evaluated and the value is
+        # returned. If no expression list is specified, None is returned.
         return
 
 
@@ -48,12 +83,16 @@ class HumanOutputFormat(OutputFormat):
             key2str[self._truncate(key)] = self._truncate(valstr)
 
         # Find max widths
+        # MAX returns a list of the results after applying the given function to each item of a given iterable
         keywidth = max(map(len, key2str.keys()))
         valwidth = max(map(len, key2str.values()))
 
         # Write out the data
+        # Just align them nicely
         dashes = '-' * (keywidth + valwidth + 7)
+        # Fill the first line with dashes
         lines = [dashes]
+        # The items() method is used to return the list with all dictionary keys with values
         for (key, val) in sorted(key2str.items()):
             lines.append('| %s%s | %s%s |' % (
                 key,
@@ -61,11 +100,29 @@ class HumanOutputFormat(OutputFormat):
                 val,
                 ' ' * (valwidth - len(val)),
             ))
+            # Have a line of dashes again
         lines.append(dashes)
+        # Write each in a new line
         self.file.write('\n'.join(lines) + '\n')
 
         # Flush the output to the file
         self.file.flush()
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
 
     def _truncate(self, s):
         return s[:20] + '...' if len(s) > 23 else s
