@@ -1,25 +1,38 @@
+# Register all possible benchmarks that can be available.
+
+
+# Specify some atari environments
 _atari7 = ['BeamRider', 'Breakout', 'Enduro', 'Pong', 'Qbert', 'Seaquest', 'SpaceInvaders']
+# And some more
 _atariexpl7 = ['Freeway', 'Gravitar', 'MontezumaRevenge', 'Pitfall', 'PrivateEye', 'Solaris', 'Venture']
 
+# Initialize _BENCHMARKS
 _BENCHMARKS = []
 
+# Add new benchmark names to _BENCHMARKS
 def register_benchmark(benchmark):
     for b in _BENCHMARKS:
         if b['name'] == benchmark['name']:
             raise ValueError('Benchmark with name %s already registered!'%b['name'])
     _BENCHMARKS.append(benchmark)
 
+# List the names of all benchmarks in _BENCHMARKS
 def list_benchmarks():
     return [b['name'] for b in _BENCHMARKS]
 
+# Get the desired benchmark if it is already listed among _BENCHMARKS
 def get_benchmark(benchmark_name):
     for b in _BENCHMARKS:
         if b['name'] == benchmark_name:
             return b
     raise ValueError('%s not found! Known benchmarks: %s' % (benchmark_name, list_benchmarks()))
 
+
 def get_task(benchmark, env_id):
     """Get a task by env_id. Return None if the benchmark doesn't have the env"""
+    # A lambda function is a small anonymous function.
+    # The filter() method constructs an iterator from elements of an iterable for which a function returns true.
+    # The next() function returns the next item from the iterator.
     return next(filter(lambda task: task['env_id'] == env_id, benchmark['tasks']), None)
 
 def find_task_for_env_id_in_any_benchmark(env_id):
@@ -31,24 +44,29 @@ def find_task_for_env_id_in_any_benchmark(env_id):
 
 _ATARI_SUFFIX = 'NoFrameskip-v4'
 
+# register_benchmark is a function defined above
+# First, register benchmarks with 200M frames
 register_benchmark({
     'name' : 'Atari200M',
     'description' :'7 Atari games from Mnih et al. (2013), with pixel observations, 200M frames',
     'tasks'  : [{'env_id' : _game + _ATARI_SUFFIX, 'trials' : 2, 'num_timesteps' : int(200e6)} for _game in _atari7]
 })
 
+# Now with 40M frames
 register_benchmark({
     'name' : 'Atari40M',
     'description' :'7 Atari games from Mnih et al. (2013), with pixel observations, 40M frames',
     'tasks'  : [{'env_id' : _game + _ATARI_SUFFIX, 'trials' : 2, 'num_timesteps' : int(40e6)} for _game in _atari7]
 })
 
+# Npw after 1h
 register_benchmark({
     'name' : 'Atari1Hr',
     'description' :'7 Atari games from Mnih et al. (2013), with pixel observations, 1 hour of walltime',
     'tasks'  : [{'env_id' : _game + _ATARI_SUFFIX, 'trials' : 2, 'num_seconds' : 60*60} for _game in _atari7]
 })
 
+# Now after 40M frames on different games
 register_benchmark({
     'name' : 'AtariExploration40M',
     'description' :'7 Atari games emphasizing exploration, with pixel observations, 40M frames',
@@ -57,11 +75,14 @@ register_benchmark({
 
 
 # MuJoCo
+# Different games relying on MuJoCo
 
 _mujocosmall = [
     'InvertedDoublePendulum-v1', 'InvertedPendulum-v1',
     'HalfCheetah-v1', 'Hopper-v1', 'Walker2d-v1',
     'Reacher-v1', 'Swimmer-v1']
+
+# Register these...
 register_benchmark({
     'name' : 'Mujoco1M',
     'description' : 'Some small 2D MuJoCo tasks, run for 1M timesteps',
