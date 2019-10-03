@@ -1,13 +1,18 @@
 __all__ = ['Monitor', 'get_monitor_files', 'load_results']
 
 import gym
+#  “Wrap” the existing environment and add some extra logic doing something
 from gym.core import Wrapper
 from os import path
 import time
+# The glob module finds all the pathnames matching a specified pattern according to the rules used by the Unix shell
 from glob import glob
 
+# The try block lets you test a block of code for errors.
+# The except block lets you handle the error.
 try:
     import ujson as json # Not necessary for monitor writing, but very useful for monitor loading
+# What to do when there is an ImportError
 except ImportError:
     import json
 
@@ -24,6 +29,7 @@ class Monitor(Wrapper):
         else:
             if not filename.endswith(Monitor.EXT):
                 filename = filename + "." + Monitor.EXT
+            # Open a file for writing (create it if it doesn't exist), as a text
             self.f = open(filename, "wt")
             self.logger = JSONLogger(self.f)
             self.logger.writekvs({"t_start": self.tstart, "gym_version": gym.__version__,
@@ -31,6 +37,7 @@ class Monitor(Wrapper):
         self.allow_early_resets = allow_early_resets
         self.rewards = None
         self.needs_reset = True
+        # Initializing variables.
         self.episode_rewards = []
         self.episode_lengths = []
         self.total_steps = 0
