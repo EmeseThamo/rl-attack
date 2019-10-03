@@ -75,6 +75,7 @@ class HumanOutputFormat(OutputFormat):
     def writekvs(self, kvs):
         # Create strings for printing
         key2str = {}
+        # The sorted() method sorts the elements of a given iterable in a specific order - Ascending (default) or Descending. 
         for (key, val) in sorted(kvs.items()):
             if isinstance(val, float):
                 valstr = '%-8.3g' % (val,)
@@ -107,23 +108,8 @@ class HumanOutputFormat(OutputFormat):
 
         # Flush the output to the file
         self.file.flush()
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
 
+    # Cut off everything after the 20th character
     def _truncate(self, s):
         return s[:20] + '...' if len(s) > 23 else s
 
@@ -139,9 +125,13 @@ class JSONOutputFormat(OutputFormat):
 
     def writekvs(self, kvs):
         for k, v in sorted(kvs.items()):
+            # The hasattr() method returns true if an object has the given named attribute and false if it does not.
+            # 'dtype' stands for data type.
             if hasattr(v, 'dtype'):
+                # tolist() is used to convert a series to list. 
                 v = v.tolist()
                 kvs[k] = float(v)
+        # Convert a Python object into a JSON string by using the json.dumps() method
         self.file.write(json.dumps(kvs) + '\n')
         self.file.flush()
 
@@ -150,11 +140,15 @@ class TensorBoardOutputFormat(OutputFormat):
     Dumps key/value pairs into TensorBoard's numeric format.
     """
     def __init__(self, dir):
+        # Raise no errors ig the directory already exists.
         os.makedirs(dir, exist_ok=True)
         self.dir = dir
         self.step = 1
         prefix = 'events'
+        # osp was os.path
+        # Return a normalized absolutized version of the pathname.
         path = osp.join(osp.abspath(dir), prefix)
+        # Import tensorflow ans some stuff from it
         import tensorflow as tf
         from tensorflow.python import pywrap_tensorflow        
         from tensorflow.core.util import event_pb2
@@ -167,6 +161,8 @@ class TensorBoardOutputFormat(OutputFormat):
     def writekvs(self, kvs):
         def summary_val(k, v):
             kwargs = {'tag': k, 'simple_value': float(v)}
+            # In a function definition, argument with double asterisks as prefix helps in sending multiple keyword arguments
+            # to it from calling environment
             return self.tf.Summary.Value(**kwargs)
         summary = self.tf.Summary(value=[summary_val(k, v) for k, v in kvs.items()])
         event = self.event_pb2.Event(wall_time=time.time(), summary=summary)
@@ -179,8 +175,8 @@ class TensorBoardOutputFormat(OutputFormat):
         if self.writer:
             self.writer.Close()
             self.writer = None
-
-
+        
+# Return the desired format
 def make_output_format(format, ev_dir):
     os.makedirs(ev_dir, exist_ok=True)
     if format == 'stdout':
